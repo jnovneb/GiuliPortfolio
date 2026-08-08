@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Editorial | Moda & Dirección Creativa</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js (3D Background Canvas) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- GSAP, ScrollTrigger & SplitType (Animaciones de Texto y Parallax) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/split-type"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            noir: '#0a0a0a',
+            cream: '#F4F1EA',
+            accent: '#C5A880',
+            panel: '#141414'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Ocultar cursor por defecto para usar el custom */
+    body {
+      cursor: none;
+    }
+
+    /* Custom Cursor */
+    #cursor-ball {
+      pointer-events: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.15s ease-out, width 0.3s ease, height 0.3s ease;
+    }
+
+    /* Canvas 3D de fondo */
+    #webgl-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.45;
+    }
+
+    /* Smooth Grain Overlay */
+    .grain-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: url('https://grainy-gradients.vercel.app/noise.svg');
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Reveal Animation Utility */
+    .char {
+      display: inline-block;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+    }
+
+    .glass-header {
+      background: rgba(10, 10, 10, 0.65);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+  </style>
+</head>
+<body class="bg-noir text-cream font-sans antialiased selection:bg-accent selection:text-noir overflow-x-hidden">
+
+  <!-- Grain Texture Overlay -->
+  <div class="grain-overlay"></div>
+
+  <!-- Three.js Canvas Background -->
+  <canvas id="webgl-bg"></canvas>
+
+  <!-- Custom Cursor -->
+  <div id="cursor-ball" class="w-4 h-4 bg-cream rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+
+  <!-- HEADER -->
+  <header class="fixed top-0 left-0 w-full z-50 glass-header border-b border-white/5 transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 py-5 flex justify-between items-center relative z-10">
+      <a href="#" class="font-serif text-2xl tracking-[0.25em] uppercase font-light hover:text-accent transition-colors hover-target">
+        Aconcagua
+      </a>
+      
+      <nav class="hidden md:flex space-x-12 text-[11px] tracking-[0.3em] uppercase font-medium text-white/60">
+        <a href="#about" class="hover:text-accent transition-colors hover-target">Biografía</a>
+        <a href="#brand" class="hover:text-accent transition-colors hover-target">Syd Noir</a>
+        <a href="#projects" class="hover:text-accent transition-colors hover-target">Proyecto 8Q</a>
+        <a href="#contact" class="hover:text-accent transition-colors hover-target">Contacto</a>
+      </nav>
+
+      <button id="menu-toggle" class="md:hidden text-xs uppercase tracking-[0.2em] hover-target flex items-center gap-2">
+        <span>Menú</span>
+        <i data-lucide="menu" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="min-h-screen relative flex flex-col justify-end pb-16 pt-36 px-6 md:px-12 max-w-7xl mx-auto z-10">
+    <div class="mb-12">
+      <span class="inline-block text-xs uppercase tracking-[0.4em] text-accent font-semibold mb-4 opacity-90">
+        Fashion Designer & Creative Director
+      </span>
+      <h1 id="hero-title" class="font-serif text-6xl md:text-8xl lg:text-9xl font-light tracking-tight leading-[0.92] max-w-5xl">
+        Siluetas, Vanguardia & Arquitectura Textil.
+      </h1>
+    </div>
+
+    <!-- Parallax Image Banner -->
+    <div class="relative w-full h-[60vh] rounded-sm overflow-hidden border border-white/10 group hover-target shadow-2xl">
+      <img id="hero-img" 
+           src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1800&q=80" 
+           alt="Editorial Fashion" 
+           class="w-full h-[120%] object-cover -translate-y-[10%] grayscale brightness-90 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000 ease-out">
+      
+      <div class="absolute inset-0 bg-gradient-to-t from-noir via-transparent to-transparent opacity-80"></div>
+      
+      <div class="absolute bottom-8 left-8 md:left-12 flex items-center space-x-4">
+        <span class="w-12 h-[1px] bg-accent"></span>
+        <span class="text-[10px] uppercase tracking-[0.35em] text-white/80">Colección Cápsula / Editorial</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1. BIOGRAFÍA -->
+  <section id="about" class="py-32 md:py-40 px-6 md:px-12 max-w-7xl mx-auto border-t border-white/10 relative z-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      
+      <div class="lg:col-span-5 relative group hover-target">
+        <div class="aspect-[3/4] rounded-sm overflow-hidden border border-white/10">
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80" 
+               alt="Diseñadora" 
+               class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700">
+        </div>
+        <div class="absolute -bottom-6 -right-6 bg-accent text-noir p-6 rounded-sm shadow-2xl hidden sm:block">
+          <span class="font-serif text-4xl font-light block leading-none">95</span>
+          <span class="text-[9px] uppercase tracking-widest font-semibold mt-1 block">Años de Trayectoria</span>
+        </div>
+      </div>
+
+      <div class="lg:col-span-7 lg:pl-6 space-y-8">
+        <div>
+          <span class="text-xs uppercase tracking-[0.3em] text-accent block mb-2 font-medium">01 / Perfil Creativo</span>
+          <h2 class="font-serif text-4xl md:text-6xl font-light tracking-tight split-text">Biografía & Filosofía</h2>
+        </div>
+
+        <p class="text-lg md:text-2xl text-white/80 font-light leading-relaxed">
+          [INSERTA AQUÍ LA DESCRIPCIÓN PRINCIPAL: Ej. Diseñadora de moda especializada en la intersección entre el patronaje conceptual, la sostenibilidad textil y la confección de alta gama.]
+        </p>
+
+        <p class="text-sm md:text-base text-white/60 font-light leading-relaxed">
+          [TEXTO SECUNDARIO DE EJEMPLO: Desarrollo integral de colecciones, abarcando la investigación conceptual de tendencias, moodboards, modelaje 3D sobre maniquí y fichas técnicas completas para fabricación.]
+        </p>
+
+        <!-- Specs Table -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6 border-t border-white/10 text-xs tracking-widest uppercase">
+          <div>
+            <span class="text-accent block font-semibold mb-1">Especialidades</span>
+            <span class="text-white/70 block">[Patronaje Digital]</span>
+            <span class="text-white/70 block">[Dirección de Arte]</span>
+          </div>
+          <div>
+            <span class="text-accent block font-semibold mb-1">Softwares</span>
+            <span class="text-white/70 block">[CLO3D / Illustrator]</span>
+            <span class="text-white/70 block">[Photoshop / InDesign]</span>
+          </div>
+          <div>
+            <span class="text-accent block font-semibold mb-1">Ecosistema</span>
+            <span class="text-white/70 block">[Sostenibilidad]</span>
+            <span class="text-white/70 block">[Tech Packs]</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 2. MARCA PERSONAL -->
+  <section id="brand" class="py-32 md:py-40 bg-panel border-y border-white/10 relative z-10">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+      
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-20 gap-6">
+        <div>
+          <span class="text-xs uppercase tracking-[0.3em] text-accent block mb-2 font-medium">02 / Proyecto de Autor</span>
+          <h2 class="font-serif text-4xl md:text-7xl font-light split-text">Marca Personal</h2>
+        </div>
+        <p class="text-sm text-white/60 max-w-md font-light leading-relaxed">
+          [TEXTO DE EJEMPLO: Concepto experimental donde el tejido orgánico se fusiona con la deconstrucción y volúmenes arquitectónicos.]
+        </p>
+      </div>
+
+      <!-- Grid Interactiva -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+        
+        <div class="md:col-span-5 space-y-4 group hover-target">
+          <div class="aspect-[4/5] rounded-sm overflow-hidden border border-white/10 relative">
+            <img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1000&q=80" 
+                 alt="Volumen" 
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+          </div>
+          <div class="flex justify-between items-center text-xs tracking-widest uppercase text-white/60">
+            <span>[01 / Volumen & Silueta]</span>
+            <span class="text-accent">[Ver Pieza]</span>
+          </div>
+        </div>
+
+        <div class="md:col-span-7 space-y-4 md:pt-20 group hover-target">
+          <div class="aspect-[16/10] rounded-sm overflow-hidden border border-white/10 relative">
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=80" 
+                 alt="Textura" 
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+          </div>
+          <div class="flex justify-between items-center text-xs tracking-widest uppercase text-white/60">
+            <span>[02 / Materia & Textura]</span>
+            <span class="text-accent">[Lookbook Completo]</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. PROYECTO 8Q -->
+  <section id="projects" class="py-32 md:py-40 px-6 md:px-12 max-w-7xl mx-auto relative z-10">
+    <div class="mb-24">
+      <span class="text-xs uppercase tracking-[0.3em] text-accent block mb-2 font-medium">03 / Commercial Case Study</span>
+      <h2 class="font-serif text-5xl md:text-8xl font-light mb-6 split-text">Colección 8Q</h2>
+      <p class="text-white/70 max-w-3xl font-light text-lg md:text-xl leading-relaxed">
+        [DESCRIPCIÓN PROYECTO 8Q: Desarrollo integral de colección cápsula comercial para la firma 8Q. Coordinación desde la conceptualización de tendencia, ilustración vectorial, tech packs de producción hasta la dirección del shooting de campaña.]
+      </p>
+    </div>
+
+    <!-- Process showcase -->
+    <div class="space-y-32">
+      
+      <!-- Tech Process -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-4 space-y-6">
+          <span class="text-xs tracking-[0.3em] uppercase text-accent font-semibold block">[Desarrollo Técnico]</span>
+          <h3 class="font-serif text-3xl md:text-4xl font-light">Bocetado & Fichas Técnicas</h3>
+          <p class="text-sm text-white/60 font-light leading-relaxed">
+            [EXPLICACIÓN TÉCNICA: Elaboración de fichas de especificaciones completas para fábrica, patronaje industrial, tabla de medidas y selección de fornituras para la marca 8Q.]
+          </p>
+          <span class="inline-block text-[10px] tracking-widest uppercase border border-accent/40 text-accent px-4 py-2 rounded-full">
+            Adobe Illustrator / Tech Pack
+          </span>
+        </div>
+
+        <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="aspect-[3/4] rounded-sm overflow-hidden border border-white/10 hover-target group">
+            <img src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80" alt="Tech 1" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700">
+          </div>
+          <div class="aspect-[3/4] rounded-sm overflow-hidden border border-white/10 hover-target group">
+            <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80" alt="Tech 2" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700">
+          </div>
+        </div>
+      </div>
+
+      <!-- Campaign Gallery -->
+      <div>
+        <div class="flex justify-between items-end mb-10 border-b border-white/10 pb-4">
+          <h3 class="font-serif text-3xl md:text-4xl font-light">Resultado Final / Campaña 8Q</h3>
+          <span class="text-xs uppercase tracking-widest text-white/50">[Selección Editorial]</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="space-y-4 hover-target group">
+            <div class="aspect-[3/4] rounded-sm overflow-hidden border border-white/10">
+              <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=800&q=80" alt="8Q Look 1" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            </div>
+            <div class="flex justify-between text-xs tracking-widest uppercase text-white/60">
+              <span>Look #01 — 8Q</span>
+              <span class="text-accent">[Ver]</span>
+            </div>
+          </div>
+
+          <div class="space-y-4 hover-target group">
+            <div class="aspect-[3/4] rounded-sm overflow-hidden border border-white/10">
+              <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80" alt="8Q Look 2" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            </div>
+            <div class="flex justify-between text-xs tracking-widest uppercase text-white/60">
+              <span>Look #02 — 8Q</span>
+              <span class="text-accent">[Ver]</span>
+            </div>
+          </div>
+
+          <div class="space-y-4 hover-target group">
+            <div class="aspect-[3/4] rounded-sm overflow-hidden border border-white/10">
+              <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=800&q=80" alt="8Q Look 3" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            </div>
+            <div class="flex justify-between text-xs tracking-widest uppercase text-white/60">
+              <span>Look #03 — 8Q</span>
+              <span class="text-accent">[Ver]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER / CONTACTO -->
+  <footer id="contact" class="bg-noir border-t border-white/10 py-32 relative z-10">
+    <div class="max-w-7xl mx-auto px-6 md:px-12 text-center space-y-12">
+      <div>
+        <span class="text-xs uppercase tracking-[0.4em] text-accent font-semibold block mb-4">¿Iniciamos un proyecto?</span>
+        <h2 class="font-serif text-5xl md:text-8xl font-light tracking-tight hover:text-accent transition-colors duration-500 hover-target">
+          <a href="mailto:tuemail@ejemplo.com">[email@ejemplo.com]</a>
+        </h2>
+      </div>
+
+      <div class="flex flex-wrap justify-center items-center gap-8 text-xs tracking-[0.3em] uppercase text-white/70">
+        <a href="#" class="hover:text-accent transition-colors hover-target">[Instagram]</a>
+        <span>•</span>
+        <a href="#" class="hover:text-accent transition-colors hover-target">[LinkedIn]</a>
+        <span>•</span>
+        <a href="#" class="hover:text-accent transition-colors hover-target">[Behance]</a>
+      </div>
+
+      <div class="pt-16 border-t border-white/5 text-[10px] uppercase tracking-[0.25em] text-white/30 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <span>© <span id="year"></span> [NOMBRE DISEÑADORA]</span>
+        <span>Portfolio de Moda Haute Couture / Prêt-à-porter</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS & ANIMACIONES HIGH-END -->
+  <script>
+    lucide.createIcons();
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // 1. THREE.JS (Fondo Abstracto 3D de Partículas)
+    const canvas = document.getElementById('webgl-bg');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 700;
+    const posArray = new Float32Array(particlesCount * 3);
+
+    for(let i=0; i<particlesCount*3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 10;
+    }
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.008,
+      color: 0xC5A880,
+      transparent: true,
+      opacity: 0.8
+    });
+
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+    camera.position.z = 3;
+
+    // Mouse Interaction en 3D
+    let mouseX = 0, mouseY = 0;
+    document.addEventListener('mousemove', (e) => {
+      mouseX = (e.clientX / window.innerWidth) - 0.5;
+      mouseY = (e.clientY / window.innerHeight) - 0.5;
+    });
+
+    function animate3D() {
+      requestAnimationFrame(animate3D);
+      particlesMesh.rotation.y += 0.001;
+      particlesMesh.rotation.x += 0.0005;
+      particlesMesh.position.x += (mouseX * 0.5 - particlesMesh.position.x) * 0.05;
+      particlesMesh.position.y += (-mouseY * 0.5 - particlesMesh.position.y) * 0.05;
+      renderer.render(scene, camera);
+    }
+    animate3D();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // 2. CUSTOM CURSOR
+    const cursorBall = document.getElementById('cursor-ball');
+    const hoverTargets = document.querySelectorAll('.hover-target');
+
+    document.addEventListener('mousemove', (e) => {
+      gsap.to(cursorBall, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.2,
+        ease: 'power2.out'
+      });
+    });
+
+    hoverTargets.forEach(target => {
+      target.addEventListener('mouseenter', () => {
+        cursorBall.style.width = '60px';
+        cursorBall.style.height = '60px';
+        cursorBall.style.opacity = '0.5';
+      });
+      target.addEventListener('mouseleave', () => {
+        cursorBall.style.width = '16px';
+        cursorBall.style.height = '16px';
+        cursorBall.style.opacity = '1';
+      });
+    });
+
+    // 3. GSAP + SCROLLTRIGGER ANIMATIONS
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Parallax Effect en la foto del Hero
+    gsap.to('#hero-img', {
+      y: '10%',
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#hero-img',
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: true
+      }
+    });
+
+    // Animar la aparición de títulos con SplitType
+    document.querySelectorAll('.split-text').forEach(title => {
+      const text = new SplitType(title, { types: 'chars, words' });
+      gsap.from(text.chars, {
+        opacity: 0,
+        y: 20,
+        duration: 1,
+        stagger: 0.02,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: title,
+          start: 'top 85%'
+        }
+      });
+    });
+  </script>
+</body>
+</html>
