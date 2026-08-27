@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- SEO & Open Graph Metadata -->
   <title>Giuliana Valerio | Fashion & Textile Designer Portfolio</title>
   <meta name="description" content="Portfolio profesional de Giuliana Valerio. Diseñadora de Indumentaria y Textil especializada en desarrollo de producto, moldería, estampas y fichas técnicas.">
@@ -15,7 +15,7 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
+
   <!-- Google Fonts: Playfair Display + Montserrat -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,12 +24,14 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- GSAP & ScrollTrigger -->
+  <!-- GSAP & ScrollTo / ScrollTrigger -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
 
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
@@ -41,7 +43,9 @@
             wine: '#801018',
             wineDark: '#50090F',
             charcoal: '#1A1A1A',
-            creamCard: '#EFECE6'
+            creamCard: '#EBE7E0',
+            darkBg: '#121212',
+            darkCard: '#1E1E1E'
           }
         }
       }
@@ -49,12 +53,19 @@
   </script>
 
   <style>
+    body, section, div, header, footer {
+      transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+    }
+
     /* Custom Scrollbar */
     ::-webkit-scrollbar {
       width: 6px;
     }
     ::-webkit-scrollbar-track {
       background: #F6F3EE;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #121212;
     }
     ::-webkit-scrollbar-thumb {
       background: #801018;
@@ -73,29 +84,37 @@
       transform: scale(1.05);
     }
 
+    /* Reveal effect */
+    .reveal-img {
+      clip-path: inset(0 0 100% 0);
+      transition: clip-path 1s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    .reveal-img.active {
+      clip-path: inset(0 0 0 0);
+    }
+
     /* Lightbox Modal Focus */
     #lightbox {
       transition: opacity 0.3s ease;
     }
 
-    /* Accessibility focus state */
     a:focus-visible, button:focus-visible {
       outline: 2px solid #801018;
       outline-offset: 4px;
     }
   </style>
 </head>
-<body class="bg-paper text-charcoal font-sans antialiased selection:bg-wine selection:text-white relative overflow-x-hidden">
+<body class="bg-paper text-charcoal dark:bg-darkBg dark:text-paper font-sans antialiased selection:bg-wine selection:text-white relative overflow-x-hidden">
 
   <!-- HEADER / NAVEGACIÓN -->
-  <header class="fixed top-0 left-0 w-full z-50 bg-paper/90 backdrop-blur-md border-b border-wine/10 transition-all duration-300">
+  <header class="fixed top-0 left-0 w-full z-50 bg-paper/90 dark:bg-darkBg/90 backdrop-blur-md border-b border-wine/10 transition-all duration-300">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <a href="#" class="font-serif text-xl tracking-wider font-bold text-wine uppercase" aria-label="Giuliana Valerio Home">
         Giuliana Valerio
       </a>
-      
+
       <!-- Nav Desktop -->
-      <nav class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-medium text-charcoal/80">
+      <nav class="hidden md:flex space-x-8 text-xs tracking-widest uppercase font-semibold text-charcoal/90 dark:text-paper/90">
         <a href="#about" data-i18n="navAbout" class="hover:text-wine transition-colors">Perfil</a>
         <a href="#syd-noir" class="hover:text-wine transition-colors">Syd Noir</a>
         <a href="#8choq" class="hover:text-wine transition-colors">8CHOQ</a>
@@ -103,25 +122,30 @@
         <a href="#contact" data-i18n="navContact" class="hover:text-wine transition-colors">Contacto</a>
       </nav>
 
-      <div class="flex items-center space-x-4">
-        <!-- Switch de Idioma Manual -->
+      <div class="flex items-center space-x-3">
+        <!-- Switch Modo Noche / Día -->
+        <button id="theme-toggle" aria-label="Cambiar tema" class="p-1.5 rounded-full border border-wine/30 text-wine hover:bg-wine hover:text-white transition-colors">
+          <i data-lucide="moon" id="theme-icon" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Switch de Idioma -->
         <button id="lang-toggle" aria-label="Cambiar idioma" class="text-xs uppercase tracking-widest font-bold border border-wine/30 px-3 py-1 rounded-full text-wine hover:bg-wine hover:text-white transition-colors">
           EN
         </button>
 
-        <a href="#contact" data-i18n="btnContact" class="hidden sm:inline-block text-xs uppercase tracking-widest bg-wine text-white px-5 py-2.5 rounded-full hover:bg-wineDark transition-colors">
+        <a href="#contact" data-i18n="btnContact" class="hidden sm:inline-block text-xs uppercase tracking-widest bg-wine text-white px-5 py-2.5 rounded-full hover:bg-wineDark transition-colors font-medium">
           Contactar
         </a>
 
         <!-- Hamburger Mobile Button -->
-        <button id="mobile-menu-btn" class="md:hidden text-charcoal focus:outline-none p-1" aria-label="Abrir menú">
+        <button id="mobile-menu-btn" class="md:hidden text-charcoal dark:text-paper focus:outline-none p-1" aria-label="Abrir menú">
           <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
       </div>
     </div>
 
     <!-- Menú Responsive Móvil -->
-    <div id="mobile-menu" class="hidden md:hidden bg-paper border-b border-wine/10 px-6 py-6 flex flex-col space-y-4 text-xs tracking-widest uppercase font-semibold text-charcoal/90">
+    <div id="mobile-menu" class="hidden md:hidden bg-paper dark:bg-darkBg border-b border-wine/10 px-6 py-6 flex flex-col space-y-4 text-xs tracking-widest uppercase font-semibold text-charcoal/90 dark:text-paper/90">
       <a href="#about" data-i18n="navAbout" class="mobile-link hover:text-wine">Perfil</a>
       <a href="#syd-noir" class="mobile-link hover:text-wine">Syd Noir</a>
       <a href="#8choq" class="mobile-link hover:text-wine">8CHOQ</a>
@@ -133,30 +157,27 @@
   <!-- HERO & PERFIL -->
   <section id="about" class="min-h-screen pt-32 pb-20 px-6 max-w-7xl mx-auto flex flex-col justify-center">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-      
+
       <!-- Bio de la Diseñadora -->
       <div class="lg:col-span-7 space-y-6">
         <div>
           <span data-i18n="heroSubtitle" class="text-xs uppercase tracking-[0.3em] text-wine font-bold block mb-2">Diseñadora de Indumentaria y Textil</span>
-          <h1 class="font-serif text-4xl md:text-6xl font-bold text-charcoal leading-tight">
+          <h1 class="font-serif text-4xl md:text-6xl font-bold text-charcoal dark:text-paper leading-tight">
             Giuliana Valerio
           </h1>
         </div>
 
-        <p data-i18n="bio1" class="text-sm md:text-base text-charcoal/80 leading-relaxed font-light">
-          Soy una diseñadora enfocada en el desarrollo integral de producto, desde la investigación y el concepto creativo hasta la producción final.
+        <p data-i18n="bio1" class="text-sm md:text-base text-charcoal/90 dark:text-paper/90 leading-relaxed font-normal">
+          Especialista en el desarrollo integral de colecciones textiles e indumentaria. Mi enfoque une la dirección creativa y el análisis de tendencias con la ejecución técnica: moldería, fichas técnicas, desarrollo de estampas y coordinación de producción.
         </p>
-        <p data-i18n="bio2" class="text-sm md:text-base text-charcoal/80 leading-relaxed font-light">
-          Mi experiencia combina diseño de colecciones, desarrollo de estampas, fichas técnicas, comunicación con proveedores, producción gráfica y adaptación de diseños para diferentes procesos de impresión.
-        </p>
-        <p data-i18n="bio3" class="text-sm md:text-base text-charcoal/80 leading-relaxed font-light">
-          Disfruto especialmente transformar ideas en productos reales, experimentando con materiales, color y técnicas que conecten creatividad con funcionalidad. Actualmente continúo desarrollando proyectos personales mientras colaboro con marcas de Argentina y Australia.
+        <p data-i18n="bio2" class="text-sm md:text-base text-charcoal/90 dark:text-paper/90 leading-relaxed font-normal">
+          Con experiencia en marcas de Argentina y Sídney, transformo conceptos creativos en productos viables y funcionales, dominando procesos de impresión digital (DTG, DTF, sublimación) y gestión con talleres externos.
         </p>
 
         <!-- Especialidades / Skills Tags -->
         <div class="pt-6 border-t border-wine/20">
           <h3 data-i18n="specTitle" class="text-xs uppercase tracking-[0.25em] text-wine font-bold mb-4">Especialidades</h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-4 text-xs text-charcoal/90 font-medium">
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-4 text-xs text-charcoal dark:text-paper font-semibold">
             <div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-wine"></span><span data-i18n="s1">Diseño de Indumentaria</span></div>
             <div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-wine"></span><span data-i18n="s2">Relación con Proveedores</span></div>
             <div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-wine"></span><span data-i18n="s3">Diseño Textil & Estampas</span></div>
@@ -170,8 +191,8 @@
       </div>
 
       <!-- FOTO PRINCIPAL PERFIL -->
-      <div class="lg:col-span-5 aspect-[3/4] img-zoom rounded-md shadow-2xl border border-wine/10 cursor-pointer lightbox-trigger" data-full="img/foto2.jpeg">
-        <img src="img/foto2.jpeg" 
+      <div class="lg:col-span-5 aspect-[3/4] img-zoom reveal-img rounded-md shadow-2xl border border-wine/10 cursor-pointer lightbox-trigger" data-full="img/Syd_Noir/foto2.jpeg">
+        <img src="img/Syd_Noir/foto2.jpeg" 
              alt="Giuliana Valerio - Diseñadora de Indumentaria" 
              loading="eager"
              class="w-full h-full object-cover">
@@ -183,26 +204,26 @@
   <!-- PROYECTO 1: SYD NOIR -->
   <section id="syd-noir" class="py-24 bg-charcoal text-paper relative overflow-hidden">
     <div class="max-w-7xl mx-auto px-6">
-      
+
       <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center mb-16 border-b border-white/10 pb-12">
         <div class="md:col-span-5 space-y-3">
           <span data-i18n="sydTag" class="text-xs uppercase tracking-[0.3em] text-wine font-bold">Proyecto Personal</span>
           <h2 class="font-serif text-5xl md:text-6xl font-bold tracking-tight">SYD NOIR</h2>
-          <p data-i18n="sydQuote" class="text-xs text-paper/60 italic">"Diseño conceptual y exploración creativa"</p>
+          <p data-i18n="sydQuote" class="text-xs text-paper/70 italic">"Diseño conceptual y exploración creativa"</p>
         </div>
 
         <!-- COLLAGE DETALLES CONCEPTUALES -->
         <div class="md:col-span-7 bg-white/5 p-6 rounded-lg border border-white/10 space-y-6">
-          <div class="aspect-[16/10] img-zoom rounded overflow-hidden border border-white/10 cursor-pointer lightbox-trigger" data-full="img/foto3.jpeg">
-            <img src="img/foto3.jpeg" alt="SYD NOIR - Detalles de confección y concepto" loading="lazy" class="w-full h-full object-cover">
+          <div class="aspect-[16/10] img-zoom reveal-img rounded overflow-hidden border border-white/10 cursor-pointer lightbox-trigger" data-full="img/Syd_Noir/foto3.jpeg">
+            <img src="img/Syd_Noir/foto3.jpeg" alt="SYD NOIR - Detalles de confección y concepto" loading="lazy" class="w-full h-full object-cover">
           </div>
-          
+
           <div class="space-y-4">
             <h3 data-i18n="sydConceptTitle" class="font-serif text-2xl text-wine font-bold uppercase tracking-wide">Concepto de Marca</h3>
-            <p data-i18n="sydConceptBody" class="text-sm text-paper/80 leading-relaxed font-light">
+            <p data-i18n="sydConceptBody" class="text-sm text-paper/90 leading-relaxed font-light">
               SYD NOIR PROJECT nace como un proyecto personal de experimentación en diseño de indumentaria. Inspirado en la estética urbana de Sídney, explora la relación entre diseño, identidad y producción en pequeñas series.
             </p>
-            <div class="pt-4 border-t border-white/10 flex flex-wrap gap-8 text-xs uppercase tracking-wider text-paper/70">
+            <div class="pt-4 border-t border-white/10 flex flex-wrap gap-8 text-xs uppercase tracking-wider text-paper/80">
               <div><strong data-i18n="sydObjLabel" class="text-wine block">Objetivo:</strong> <span data-i18n="sydObjVal">Explorar el diseño como herramienta para construir una identidad contemporánea.</span></div>
               <div><strong data-i18n="sydRoleLabel" class="text-wine block">Mi Rol:</strong> <span data-i18n="sydRoleVal">Diseño integral de marca, colección, estampas y desarrollo técnico.</span></div>
             </div>
@@ -210,22 +231,19 @@
         </div>
       </div>
 
-      <!-- Galería Syd Noir -->
+      <!-- Galería Syd Noir (Actualizada con AmoreShirt.jpg) -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <!-- FOTO: Detalle Camiseta Lace -->
-        <div class="aspect-[3/4] img-zoom rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="img/foto1.jpeg">
-          <img src="img/foto1.jpeg" alt="Syd Noir - Lace Tee" loading="lazy" class="w-full h-full object-cover">
+        <div class="aspect-[3/4] img-zoom reveal-img rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="img/Syd_Noir/foto1.jpeg">
+          <img src="img/Syd_Noir/foto1.jpeg" alt="Syd Noir - Lace Tee" loading="lazy" class="w-full h-full object-cover">
         </div>
-        <!-- FOTO: Retrato Blazer y Sídney -->
-        <div class="aspect-[3/4] img-zoom rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="img/foto4.jpeg">
-          <img src="img/foto4.jpeg" alt="Syd Noir - Custom Blazer Look" loading="lazy" class="w-full h-full object-cover">
+        <div class="aspect-[3/4] img-zoom reveal-img rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="img/Syd_Noir/foto4.jpeg">
+          <img src="img/Syd_Noir/foto4.jpeg" alt="Syd Noir - Custom Blazer Look" loading="lazy" class="w-full h-full object-cover">
         </div>
-        <!-- Placeholders para completar la colección -->
-        <div class="aspect-[3/4] img-zoom rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1600&q=80">
+        <div class="aspect-[3/4] img-zoom reveal-img rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="img/Syd_Noir/AmoreShirt.jpg">
+          <img src="img/Syd_Noir/AmoreShirt.jpg" alt="Syd Noir - Amore Shirt" loading="lazy" class="w-full h-full object-cover">
+        </div>
+        <div class="aspect-[3/4] img-zoom reveal-img rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1600&q=80">
           <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80" alt="Syd Noir Look 3" loading="lazy" class="w-full h-full object-cover">
-        </div>
-        <div class="aspect-[3/4] img-zoom rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1600&q=80">
-          <img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=800&q=80" alt="Syd Noir Look 4" loading="lazy" class="w-full h-full object-cover">
         </div>
       </div>
 
@@ -233,120 +251,161 @@
   </section>
 
   <!-- PROYECTO 2: 8CHOQ SPORTSWEAR -->
-  <section id="8choq" class="py-24 max-w-7xl mx-auto px-6">
+  <section id="8choq" class="relative bg-paper dark:bg-darkBg overflow-hidden py-16">
     
-    <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+    <!-- Encabezado y Timeline Interactivo -->
+    <div class="max-w-7xl mx-auto px-6 text-center space-y-4 mb-8">
       <span data-i18n="c8choqTag" class="text-xs uppercase tracking-[0.3em] text-wine font-bold">Diseño & Desarrollo Integral</span>
-      <h2 class="font-serif text-6xl md:text-7xl font-bold text-charcoal">8CHOQ</h2>
-      <p data-i18n="c8choqSubtitle" class="text-sm text-charcoal/70 italic">"Diseño de indumentaria deportiva y trabajo conjunto con producción"</p>
+      <h2 class="font-serif text-6xl md:text-7xl font-bold text-charcoal dark:text-paper">8CHOQ</h2>
+      <p data-i18n="c8choqSubtitle" class="text-sm text-charcoal/80 dark:text-paper/80 italic">"Diseño de indumentaria deportiva y trabajo conjunto con producción"</p>
 
-      <!-- Timeline visual -->
-      <div class="pt-8 flex justify-between items-center text-[10px] md:text-xs font-bold uppercase tracking-widest text-wine border-t border-wine/20">
-        <span class="flex flex-col items-center gap-1"><span class="w-3 h-3 rounded-full bg-wine"></span><span data-i18n="t1">Investigación</span></span>
-        <span class="w-8 md:w-12 h-[1px] bg-wine/30"></span>
-        <span class="flex flex-col items-center gap-1"><span class="w-3 h-3 rounded-full bg-wine"></span><span data-i18n="t2">Desarrollo</span></span>
-        <span class="w-8 md:w-12 h-[1px] bg-wine/30"></span>
-        <span class="flex flex-col items-center gap-1"><span class="w-3 h-3 rounded-full bg-wine"></span><span data-i18n="t3">Diseño</span></span>
-        <span class="w-8 md:w-12 h-[1px] bg-wine/30"></span>
-        <span class="flex flex-col items-center gap-1"><span class="w-3 h-3 rounded-full bg-wine"></span><span data-i18n="t4">Estampas</span></span>
-        <span class="w-8 md:w-12 h-[1px] bg-wine/30"></span>
-        <span class="flex flex-col items-center gap-1"><span class="w-3 h-3 rounded-full bg-wine"></span><span data-i18n="t5">Colección</span></span>
+      <!-- Botones Interactivos de Navegación -->
+      <div id="timeline-bar" class="pt-6 flex justify-between items-center text-[10px] md:text-xs font-bold uppercase tracking-widest max-w-4xl mx-auto">
+        <button class="nav-step-btn flex flex-col items-center gap-1.5 transition-all duration-300 group focus:outline-none" data-card="0">
+          <span class="step-dot w-3.5 h-3.5 rounded-full border-2 border-wine bg-wine transition-all group-hover:scale-125"></span>
+          <span data-i18n="t1" class="step-text text-wine font-bold">Concepto</span>
+        </button>
+        <span class="w-8 md:w-16 h-[1px] bg-wine/30"></span>
+        
+        <button class="nav-step-btn flex flex-col items-center gap-1.5 transition-all duration-300 group focus:outline-none" data-card="1">
+          <span class="step-dot w-3.5 h-3.5 rounded-full border-2 border-wine bg-transparent transition-all group-hover:scale-125"></span>
+          <span data-i18n="t2" class="step-text text-charcoal/50 dark:text-paper/50">Diseño</span>
+        </button>
+        <span class="w-8 md:w-16 h-[1px] bg-wine/30"></span>
+
+        <button class="nav-step-btn flex flex-col items-center gap-1.5 transition-all duration-300 group focus:outline-none" data-card="2">
+          <span class="step-dot w-3.5 h-3.5 rounded-full border-2 border-wine bg-transparent transition-all group-hover:scale-125"></span>
+          <span data-i18n="t3" class="step-text text-charcoal/50 dark:text-paper/50">Estampas</span>
+        </button>
+        <span class="w-8 md:w-16 h-[1px] bg-wine/30"></span>
+
+        <button class="nav-step-btn flex flex-col items-center gap-1.5 transition-all duration-300 group focus:outline-none" data-card="3">
+          <span class="step-dot w-3.5 h-3.5 rounded-full border-2 border-wine bg-transparent transition-all group-hover:scale-125"></span>
+          <span data-i18n="t4" class="step-text text-charcoal/50 dark:text-paper/50">Taller & Producción</span>
+        </button>
       </div>
     </div>
 
-    <!-- FASES 8CHOQ -->
-    <div class="space-y-16">
+    <!-- Contenedor Horizontal con Botones Flotantes de Navegación -->
+    <div class="relative max-w-7xl mx-auto px-6">
 
-      <!-- FASE 01: CONCEPTO -->
-      <div class="bg-creamCard p-8 rounded-lg border border-wine/10 space-y-6">
-        <div class="flex items-center gap-4">
-          <span class="font-serif text-5xl text-wine font-bold">01</span>
-          <div>
-            <h3 data-i18n="f1Title" class="font-serif text-2xl font-bold text-charcoal">CONCEPTO</h3>
-            <span data-i18n="f1Sub" class="text-xs uppercase tracking-widest text-wine font-semibold">Investigación y Dirección</span>
+      <!-- Flechas flotantes de Navegación -->
+      <button id="prev-card-btn" class="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-wine text-white p-3 rounded-full shadow-lg hover:bg-wineDark transition-all opacity-40 hover:opacity-100 disabled:opacity-20" aria-label="Anterior">
+        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+      </button>
+      <button id="next-card-btn" class="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-wine text-white p-3 rounded-full shadow-lg hover:bg-wineDark transition-all opacity-80 hover:opacity-100" aria-label="Siguiente">
+        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+      </button>
+
+      <div id="horizontal-wrapper" class="overflow-hidden w-full py-4">
+        <div id="horizontal-container" class="flex flex-nowrap gap-8 transition-transform duration-700 ease-out">
+
+          <!-- CARD FASE 01: CONCEPTO -->
+          <div class="horizontal-card w-full md:w-[80%] lg:w-[75%] h-auto flex-shrink-0 bg-creamCard dark:bg-darkCard p-8 rounded-xl border border-wine/10 flex flex-col justify-between shadow-xl">
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <span class="font-serif text-5xl text-wine font-bold">01</span>
+                <div>
+                  <h3 data-i18n="f1Title" class="font-serif text-2xl font-bold text-charcoal dark:text-paper">CONCEPTO</h3>
+                  <span data-i18n="f1Sub" class="text-xs uppercase tracking-widest text-wine font-semibold">Investigación y Dirección</span>
+                </div>
+              </div>
+              <p data-i18n="f1Body" class="text-sm text-charcoal/90 dark:text-paper/90 leading-relaxed font-normal">
+                El desarrollo de la colección comienza con la investigación de tendencias, identificando referencias visuales, deportivas y culturales que construyen la dirección creativa de la temporada.
+              </p>
+            </div>
+            <div class="grid grid-cols-3 gap-3 pt-6">
+              <div class="aspect-video img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=800&q=80" alt="Moodboard" loading="lazy" class="w-full h-full object-cover"></div>
+              <div class="aspect-video img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=80" alt="Tendencias" loading="lazy" class="w-full h-full object-cover"></div>
+              <div class="aspect-video img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80" alt="Materiales" loading="lazy" class="w-full h-full object-cover"></div>
+            </div>
           </div>
-        </div>
-        <p data-i18n="f1Body" class="text-sm text-charcoal/80 max-w-3xl leading-relaxed">
-          El desarrollo de la colección comienza con la investigación de tendencias, identificando referencias visuales, deportivas y culturales que construyen la dirección creativa de la temporada.
-        </p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-          <div class="aspect-video img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=800&q=80" alt="Moodboard" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-video img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=80" alt="Tendencias" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-video img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80" alt="Materiales" loading="lazy" class="w-full h-full object-cover"></div>
+
+          <!-- CARD FASE 02: DISEÑO & MOLDERÍA -->
+          <div class="horizontal-card w-full md:w-[80%] lg:w-[75%] h-auto flex-shrink-0 bg-creamCard dark:bg-darkCard p-8 rounded-xl border border-wine/10 flex flex-col justify-between shadow-xl">
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <span class="font-serif text-5xl text-wine font-bold">02</span>
+                <div>
+                  <h3 data-i18n="f2Title" class="font-serif text-2xl font-bold text-charcoal dark:text-paper">DISEÑO & MOLDERÍA</h3>
+                  <span data-i18n="f2Sub" class="text-xs uppercase tracking-widest text-wine font-semibold">Moldería de Muestra y Desarrollo</span>
+                </div>
+              </div>
+              <p data-i18n="f2Body" class="text-sm text-charcoal/90 dark:text-paper/90 leading-relaxed font-normal">
+                A partir del concepto se desarrolla la moldería y se definen las siluetas, colores y proporciones que darán forma a la colección. Se realiza una muestra con un textil de mismas características para evaluar el calce, comodidad y movimiento.
+              </p>
+            </div>
+            <div class="grid grid-cols-4 gap-3 pt-6">
+              <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80" alt="Design 1" loading="lazy" class="w-full h-full object-cover"></div>
+              <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800&q=80" alt="Design 2" loading="lazy" class="w-full h-full object-cover"></div>
+              <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80" alt="Moldería" loading="lazy" class="w-full h-full object-cover"></div>
+              <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80" alt="Sample" loading="lazy" class="w-full h-full object-cover"></div>
+            </div>
+          </div>
+
+          <!-- CARD FASE 03: ESTAMPAS -->
+          <div class="horizontal-card w-full md:w-[80%] lg:w-[75%] h-auto flex-shrink-0 bg-creamCard dark:bg-darkCard p-8 rounded-xl border border-wine/10 flex flex-col justify-between shadow-xl">
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <span class="font-serif text-5xl text-wine font-bold">03</span>
+                <div>
+                  <h3 data-i18n="f3Title" class="font-serif text-2xl font-bold text-charcoal dark:text-paper">ESTAMPAS</h3>
+                  <span data-i18n="f3Sub" class="text-xs uppercase tracking-widest text-wine font-semibold">Del Concepto al Producto</span>
+                </div>
+              </div>
+              <p data-i18n="f3Body" class="text-sm text-charcoal/90 dark:text-paper/90 leading-relaxed font-normal">
+                Desarrollo de estampas aplicadas a distintas líneas de producto, desde el concepto gráfico hasta su materialización en prenda (Estampas Únicas y Estampas Continuas / Rapports).
+              </p>
+            </div>
+            <div class="grid grid-cols-3 gap-3 pt-6">
+              <div class="aspect-[4/3] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=800&q=80" alt="Estampa 1" loading="lazy" class="w-full h-full object-cover"></div>
+              <div class="aspect-[4/3] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80" alt="Estampa 2" loading="lazy" class="w-full h-full object-cover"></div>
+              <div class="aspect-[4/3] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80" alt="Estampa 3" loading="lazy" class="w-full h-full object-cover"></div>
+            </div>
+          </div>
+
+          <!-- CARD FASE 04: TALLER & PRODUCCIÓN -->
+          <div class="horizontal-card w-full md:w-[80%] lg:w-[75%] h-auto flex-shrink-0 bg-creamCard dark:bg-darkCard p-8 rounded-xl border border-wine/10 flex flex-col justify-between shadow-xl">
+            <div class="space-y-4">
+              <div class="flex items-center gap-4">
+                <span class="font-serif text-5xl text-wine font-bold">04</span>
+                <div>
+                  <h3 data-i18n="f4Title" class="font-serif text-2xl font-bold text-charcoal dark:text-paper">TALLER & PRODUCCIÓN</h3>
+                  <span data-i18n="f4Sub" class="text-xs uppercase tracking-widest text-wine font-semibold">Producción Externa & Control de Calidad</span>
+                </div>
+              </div>
+              <p data-i18n="f4Body" class="text-sm text-charcoal/90 dark:text-paper/90 leading-relaxed font-normal">
+                Del desarrollo técnico a la producción de la prenda. Comunicación fluida con talleres a través de fichas técnicas de avíos, costuras y tablas de talles para las distintas líneas (Running, Gym, Puffer, Outdoor).
+              </p>
+            </div>
+            <!-- Grid con las 3 imágenes reales de img/8Q_Taller/ -->
+            <div class="grid grid-cols-3 gap-3 pt-6">
+              <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="img/8Q_Taller/4_8q1.jpg">
+                <img src="img/8Q_Taller/4_8q1.jpg" alt="Taller & Producción 8CHOQ - 1" loading="lazy" class="w-full h-full object-cover">
+              </div>
+              <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="img/8Q_Taller/4_8q2.jpg">
+                <img src="img/8Q_Taller/4_8q2.jpg" alt="Taller & Producción 8CHOQ - 2" loading="lazy" class="w-full h-full object-cover">
+              </div>
+              <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="img/8Q_Taller/4_8q3.jpg">
+                <img src="img/8Q_Taller/4_8q3.jpg" alt="Taller & Producción 8CHOQ - 3" loading="lazy" class="w-full h-full object-cover">
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
-
-      <!-- FASE 02: DISEÑO & MOLDERÍA -->
-      <div class="bg-creamCard p-8 rounded-lg border border-wine/10 space-y-6">
-        <div class="flex items-center gap-4">
-          <span class="font-serif text-5xl text-wine font-bold">02</span>
-          <div>
-            <h3 data-i18n="f2Title" class="font-serif text-2xl font-bold text-charcoal">DISEÑO & MOLDERÍA</h3>
-            <span data-i18n="f2Sub" class="text-xs uppercase tracking-widest text-wine font-semibold">Moldería de Muestra y Desarrollo</span>
-          </div>
-        </div>
-        <p data-i18n="f2Body" class="text-sm text-charcoal/80 max-w-3xl leading-relaxed">
-          A partir del concepto se desarrolla la moldería y se definen las siluetas, colores y proporciones que darán forma a la colección. Se realiza una muestra con un textil de mismas características para evaluar el calce, comodidad y movimiento.
-        </p>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-          <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80" alt="Design 1" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800&q=80" alt="Design 2" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=800&q=80" alt="Moldería" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80" alt="Sample" loading="lazy" class="w-full h-full object-cover"></div>
-        </div>
-      </div>
-
-      <!-- FASE 03: ESTAMPAS -->
-      <div class="bg-creamCard p-8 rounded-lg border border-wine/10 space-y-6">
-        <div class="flex items-center gap-4">
-          <span class="font-serif text-5xl text-wine font-bold">03</span>
-          <div>
-            <h3 data-i18n="f3Title" class="font-serif text-2xl font-bold text-charcoal">ESTAMPAS</h3>
-            <span data-i18n="f3Sub" class="text-xs uppercase tracking-widest text-wine font-semibold">Del Concepto al Producto</span>
-          </div>
-        </div>
-        <p data-i18n="f3Body" class="text-sm text-charcoal/80 max-w-3xl leading-relaxed">
-          Desarrollo de estampas aplicadas a distintas líneas de producto, desde el concepto gráfico hasta su materialización en prenda (Estampas Únicas y Estampas Continuas / Rapports).
-        </p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-          <div class="aspect-[4/3] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=800&q=80" alt="Estampa 1" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-[4/3] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80" alt="Estampa 2" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-[4/3] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80" alt="Estampa 3" loading="lazy" class="w-full h-full object-cover"></div>
-        </div>
-      </div>
-
-      <!-- FASE 04 & 05: TALLER & PRODUCCIÓN -->
-      <div class="bg-creamCard p-8 rounded-lg border border-wine/10 space-y-6">
-        <div class="flex items-center gap-4">
-          <span class="font-serif text-5xl text-wine font-bold">04 & 05</span>
-          <div>
-            <h3 data-i18n="f4Title" class="font-serif text-2xl font-bold text-charcoal">TALLER & PRODUCCIÓN</h3>
-            <span data-i18n="f4Sub" class="text-xs uppercase tracking-widest text-wine font-semibold">Producción Externa & Control de Calidad</span>
-          </div>
-        </div>
-        <p data-i18n="f4Body" class="text-sm text-charcoal/80 max-w-3xl leading-relaxed">
-          Del desarrollo técnico a la producción de la prenda. Comunicación fluida con talleres a través de fichas técnicas de avíos, costuras y tablas de talles para las distintas líneas (Running, Gym, Puffer, Outdoor).
-        </p>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4">
-          <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=800&q=80" alt="Producción 1" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=800&q=80" alt="Producción 2" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=800&q=80" alt="Producción 3" loading="lazy" class="w-full h-full object-cover"></div>
-          <div class="aspect-[3/4] img-zoom rounded border border-wine/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80" alt="Producción 4" loading="lazy" class="w-full h-full object-cover"></div>
-        </div>
-      </div>
-
     </div>
   </section>
 
   <!-- PROYECTO 3: KOLOUR BY KAZ -->
   <section id="kolour" class="py-24 bg-charcoal text-paper relative">
     <div class="max-w-7xl mx-auto px-6">
-      
+
       <div class="grid grid-cols-1 md:grid-cols-12 gap-12 items-center mb-16">
         <div class="md:col-span-5 space-y-4">
           <span data-i18n="kTag" class="text-xs uppercase tracking-[0.3em] text-wine font-bold">Imprenta & Producción</span>
           <h2 class="font-serif text-5xl font-bold">KOLOUR BY KAZ</h2>
-          <p data-i18n="kBody" class="text-sm text-paper/80 leading-relaxed font-light">
+          <p data-i18n="kBody" class="text-sm text-paper/90 leading-relaxed font-light">
             Diseño gráfico aplicado a la producción textil en Sídney. Gestión integral del taller de impresión para realizar producciones de manera rápida y eficiente.
           </p>
         </div>
@@ -355,50 +414,50 @@
           <div class="bg-white/5 p-4 rounded border border-white/10">
             <span class="font-serif text-3xl text-wine font-bold block mb-1">01</span>
             <span data-i18n="kStep1" class="text-xs uppercase tracking-wider font-semibold block mb-1">Selección</span>
-            <p data-i18n="kStep1Sub" class="text-[10px] text-paper/60">Color, textil, prenda y definición de gráfica.</p>
+            <p data-i18n="kStep1Sub" class="text-[10px] text-paper/70">Color, textil, prenda y definición de gráfica.</p>
           </div>
           <div class="bg-white/5 p-4 rounded border border-white/10">
             <span class="font-serif text-3xl text-wine font-bold block mb-1">02</span>
             <span data-i18n="kStep2" class="text-xs uppercase tracking-wider font-semibold block mb-1">Desarrollo</span>
-            <p data-i18n="kStep2Sub" class="text-[10px] text-paper/60">Archivos, fichas técnicas y preparación.</p>
+            <p data-i18n="kStep2Sub" class="text-[10px] text-paper/70">Archivos, fichas técnicas y preparación.</p>
           </div>
           <div class="bg-white/5 p-4 rounded border border-white/10">
             <span class="font-serif text-3xl text-wine font-bold block mb-1">03</span>
             <span data-i18n="kStep3" class="text-xs uppercase tracking-wider font-semibold block mb-1">Producción</span>
-            <p data-i18n="kStep3Sub" class="text-[10px] text-paper/60">DTG, DTF, Sublimación y control final.</p>
+            <p data-i18n="kStep3Sub" class="text-[10px] text-paper/70">DTG, DTF, Sublimación y control final.</p>
           </div>
         </div>
       </div>
 
       <!-- Fotos de Imprenta -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="aspect-square img-zoom rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=800&q=80" alt="Imprenta 1" loading="lazy" class="w-full h-full object-cover"></div>
-        <div class="aspect-square img-zoom rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80" alt="Imprenta 2" loading="lazy" class="w-full h-full object-cover"></div>
-        <div class="aspect-square img-zoom rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80" alt="Imprenta 3" loading="lazy" class="w-full h-full object-cover"></div>
-        <div class="aspect-square img-zoom rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" alt="Imprenta 4" loading="lazy" class="w-full h-full object-cover"></div>
+        <div class="aspect-square img-zoom reveal-img rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1562157873-818bc0726f68?auto=format&fit=crop&w=800&q=80" alt="Imprenta 1" loading="lazy" class="w-full h-full object-cover"></div>
+        <div class="aspect-square img-zoom reveal-img rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80" alt="Imprenta 2" loading="lazy" class="w-full h-full object-cover"></div>
+        <div class="aspect-square img-zoom reveal-img rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80" alt="Imprenta 3" loading="lazy" class="w-full h-full object-cover"></div>
+        <div class="aspect-square img-zoom reveal-img rounded border border-white/10 cursor-pointer lightbox-trigger" data-full="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1600&q=80"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80" alt="Imprenta 4" loading="lazy" class="w-full h-full object-cover"></div>
       </div>
 
     </div>
   </section>
 
-  <!-- FOOTER / CONTACTO Y DESCARGA CV -->
-  <footer id="contact" class="py-24 bg-paper border-t border-wine/10 text-center">
+  <!-- FOOTER / CONTACTO -->
+  <footer id="contact" class="py-24 bg-paper dark:bg-darkBg border-t border-wine/10 text-center">
     <div class="max-w-4xl mx-auto px-6 space-y-10">
       <div>
         <span data-i18n="contactTag" class="text-xs uppercase tracking-[0.3em] text-wine font-bold block mb-2">¿Hablamos?</span>
-        <h2 data-i18n="contactTitle" class="font-serif text-4xl md:text-6xl font-bold text-charcoal">Contacto & Redes</h2>
+        <h2 data-i18n="contactTitle" class="font-serif text-4xl md:text-6xl font-bold text-charcoal dark:text-paper">Contacto & Redes</h2>
       </div>
 
       <!-- Botón Descarga CV -->
       <div>
-        <a href="#" download data-i18n="downloadCV" class="inline-flex items-center gap-2 text-xs uppercase tracking-widest border border-wine text-wine hover:bg-wine hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-semibold">
+        <a href="#" download data-i18n="downloadCV" class="inline-flex items-center gap-2 text-xs uppercase tracking-widest border border-wine text-wine hover:bg-wine hover:text-white px-6 py-3 rounded-full transition-all duration-300 font-bold">
           <i data-lucide="download" class="w-4 h-4"></i>
           Descargar Curriculum Vitae
         </a>
       </div>
 
       <!-- Links de Contacto -->
-      <div class="flex flex-wrap justify-center items-center gap-8 text-xs md:text-sm tracking-widest uppercase font-semibold text-charcoal">
+      <div class="flex flex-wrap justify-center items-center gap-8 text-xs md:text-sm tracking-widest uppercase font-bold text-charcoal dark:text-paper">
         <a href="mailto:valerio.giuliana.c@gmail.com" class="hover:text-wine transition-colors flex items-center gap-2 underline underline-offset-8">
           <i data-lucide="mail" class="w-4 h-4 text-wine"></i>
           valerio.giuliana.c@gmail.com
@@ -413,16 +472,16 @@
         </a>
       </div>
 
-      <div class="pt-12 border-t border-wine/10 text-[10px] uppercase tracking-widest text-charcoal/50">
+      <div class="pt-12 border-t border-wine/10 text-[10px] uppercase tracking-widest text-charcoal/60 dark:text-paper/60 font-semibold">
         © <span id="year"></span> Giuliana Valerio — Fashion & Textile Designer
       </div>
     </div>
   </footer>
 
-  <!-- LIGHTBOX MODAL PARA VER FOTOS EN GRANDE -->
+  <!-- LIGHTBOX MODAL -->
   <div id="lightbox" class="fixed inset-0 bg-black/90 z-50 hidden opacity-0 flex justify-center items-center p-4">
     <button id="lightbox-close" class="absolute top-6 right-6 text-white text-sm uppercase tracking-widest flex items-center gap-2 focus:outline-none">
-      <span>Cerrar</span>
+      <span data-i18n="close">Cerrar</span>
       <i data-lucide="x" class="w-6 h-6"></i>
     </button>
     <img id="lightbox-img" src="" alt="Ampliada" class="max-w-full max-h-[90vh] object-contain rounded shadow-2xl">
@@ -433,16 +492,26 @@
     lucide.createIcons();
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // 1. Detección y Cambio de Idioma (ES / EN)
+    // 1. Alternador de Modo Oscuro / Claro
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+
+    themeToggleBtn.addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      themeIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+      lucide.createIcons();
+    });
+
+    // 2. Detección y Cambio de Idioma (ES / EN)
     const i18nData = {
       es: {
         navAbout: "Perfil",
         navContact: "Contacto",
         btnContact: "Contactar",
         heroSubtitle: "Diseñadora de Indumentaria y Textil",
-        bio1: "Soy una diseñadora enfocada en el desarrollo integral de producto, desde la investigación y el concepto creativo hasta la producción final.",
-        bio2: "Mi experiencia combina diseño de colecciones, desarrollo de estampas, fichas técnicas, comunicación con proveedores, producción gráfica y adaptación de diseños para diferentes procesos de impresión.",
-        bio3: "Disfruto especialmente transformar ideas en productos reales, experimentando con materiales, color y técnicas que conecten creatividad con funcionalidad. Actualmente continúo desarrollando proyectos personales mientras colaboro con marcas de Argentina y Australia.",
+        bio1: "Especialista en el desarrollo integral de colecciones textiles e indumentaria. Mi enfoque une la dirección creativa y el análisis de tendencias con la ejecución técnica: moldería, fichas técnicas, desarrollo de estampas y coordinación de producción.",
+        bio2: "Con experiencia en marcas de Argentina y Sídney, transformo conceptos creativos en productos viables y funcionales, dominando procesos de impresión digital (DTG, DTF, sublimación) y gestión con talleres externos.",
         specTitle: "Especialidades",
         s1: "Diseño de Indumentaria",
         s2: "Relación con Proveedores",
@@ -462,11 +531,10 @@
         sydRoleVal: "Diseño integral de marca, colección, estampas y desarrollo técnico.",
         c8choqTag: "Diseño & Desarrollo Integral",
         c8choqSubtitle: '"Diseño de indumentaria deportiva y trabajo conjunto con producción"',
-        t1: "Investigación",
-        t2: "Desarrollo",
-        t3: "Diseño",
-        t4: "Estampas",
-        t5: "Colección",
+        t1: "Concepto",
+        t2: "Diseño",
+        t3: "Estampas",
+        t4: "Taller & Producción",
         f1Title: "CONCEPTO",
         f1Sub: "Investigación y Dirección",
         f1Body: "El desarrollo de la colección comienza con la investigación de tendencias, identificando referencias visuales, deportivas y culturales que construyen la dirección creativa de la temporada.",
@@ -489,16 +557,16 @@
         kStep3Sub: "DTG, DTF, Sublimación y control final.",
         contactTag: "¿Hablamos?",
         contactTitle: "Contacto & Redes",
-        downloadCV: "Descargar Curriculum Vitae"
+        downloadCV: "Descargar Curriculum Vitae",
+        close: "Cerrar"
       },
       en: {
         navAbout: "About",
         navContact: "Contact",
         btnContact: "Get in Touch",
         heroSubtitle: "Fashion & Textile Designer",
-        bio1: "I am a designer focused on end-to-end product development, from creative research and concept design to final garment production.",
-        bio2: "My experience merges collection design, textile print development, tech packs, supplier coordination, graphic production, and print adaptation.",
-        bio3: "I enjoy turning creative ideas into tangible garments, experimenting with materials, color, and functional techniques. Currently working on personal projects while collaborating with brands across Argentina and Australia.",
+        bio1: "Specialist in end-to-end garment and textile collection development. My work pairs creative direction and trend forecasting with technical execution: patternmaking, spec sheets, print development, and production oversight.",
+        bio2: "With experience across brands in Argentina and Sydney, I turn concepts into market-ready products, leveraging digital printing methods (DTG, DTF, sublimation) and seamless factory collaboration.",
         specTitle: "Specialties",
         s1: "Fashion Design",
         s2: "Supplier Communication",
@@ -518,11 +586,10 @@
         sydRoleVal: "Comprehensive brand design, collection, prints, and technical development.",
         c8choqTag: "End-to-End Design & Development",
         c8choqSubtitle: '"Sportswear design and hands-on production management"',
-        t1: "Research",
-        t2: "Development",
-        t3: "Design",
-        t4: "Prints",
-        t5: "Collection",
+        t1: "Concept",
+        t2: "Design",
+        t3: "Prints",
+        t4: "Production",
         f1Title: "CONCEPT",
         f1Sub: "Research & Creative Direction",
         f1Body: "Collection development starts with trend forecasting, identifying visual, athletic, and cultural references that shape the seasonal direction.",
@@ -545,7 +612,8 @@
         kStep3Sub: "DTG, DTF, Sublimation, and quality control.",
         contactTag: "Let's Connect",
         contactTitle: "Contact & Links",
-        downloadCV: "Download Resume / CV"
+        downloadCV: "Download Resume / CV", 
+        close: "Close"
       }
     };
 
@@ -567,7 +635,7 @@
       setLanguage(currentLang === 'es' ? 'en' : 'es');
     });
 
-    // 2. Menú Móvil Hamburger
+    // 3. Menú Móvil Hamburger
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const mobileLinks = document.querySelectorAll('.mobile-link');
@@ -582,7 +650,7 @@
       });
     });
 
-    // 3. Lightbox Interactivo para ver imágenes en grande
+    // 4. Lightbox Interactivo
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxClose = document.getElementById('lightbox-close');
@@ -612,19 +680,67 @@
       if (e.target === lightbox) closeLightbox();
     });
 
-    // 4. Animaciones GSAP ScrollTrigger
+    // 5. NAVEGACIÓN Y SLIDER EN LA SECCIÓN DE 8CHOQ
+    const horizontalContainer = document.getElementById('horizontal-container');
+    const navStepBtns = document.querySelectorAll('.nav-step-btn');
+    const prevBtn = document.getElementById('prev-card-btn');
+    const nextBtn = document.getElementById('next-card-btn');
+    let currentCardIndex = 0;
+    const totalCards = 4;
+
+    function updateCardPosition(index) {
+      currentCardIndex = Math.max(0, Math.min(index, totalCards - 1));
+      
+      const cardWidth = document.querySelector('.horizontal-card').offsetWidth + 32; 
+      gsap.to(horizontalContainer, {
+        x: -currentCardIndex * cardWidth,
+        duration: 0.6,
+        ease: "power2.out"
+      });
+
+      navStepBtns.forEach((btn, i) => {
+        const dot = btn.querySelector('.step-dot');
+        const text = btn.querySelector('.step-text');
+
+        if (i === currentCardIndex) {
+          dot.classList.add('bg-wine');
+          dot.classList.remove('bg-transparent');
+          text.classList.add('text-wine', 'font-bold');
+          text.classList.remove('text-charcoal/50', 'dark:text-paper/50');
+        } else {
+          dot.classList.remove('bg-wine');
+          dot.classList.add('bg-transparent');
+          text.classList.remove('text-wine', 'font-bold');
+          text.classList.add('text-charcoal/50', 'dark:text-paper/50');
+        }
+      });
+
+      prevBtn.disabled = currentCardIndex === 0;
+      nextBtn.disabled = currentCardIndex === totalCards - 1;
+      prevBtn.style.opacity = currentCardIndex === 0 ? "0.2" : "1";
+      nextBtn.style.opacity = currentCardIndex === totalCards - 1 ? "0.2" : "1";
+    }
+
+    navStepBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetIndex = parseInt(btn.getAttribute('data-card'));
+        updateCardPosition(targetIndex);
+      });
+    });
+
+    prevBtn.addEventListener('click', () => updateCardPosition(currentCardIndex - 1));
+    nextBtn.addEventListener('click', () => updateCardPosition(currentCardIndex + 1));
+
+    updateCardPosition(0);
+
+    // 6. Animaciones de Revelado GSAP
     gsap.registerPlugin(ScrollTrigger);
 
-    gsap.utils.toArray('section').forEach(section => {
-      gsap.from(section, {
-        opacity: 0,
-        y: 35,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: section,
-          start: 'top 85%'
-        }
+    document.querySelectorAll('.reveal-img').forEach(img => {
+      ScrollTrigger.create({
+        trigger: img,
+        start: 'top 85%',
+        onEnter: () => img.classList.add('active')
       });
     });
   </script>
